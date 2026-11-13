@@ -1,0 +1,16 @@
+product_id,product_name,category,price,cost
+1,Espresso,Hot Drinks,150,55
+2,Americano,Hot Drinks,180,65
+3,Cappuccino,Hot Drinks,250,95
+4,Latte,Hot Drinks,280,110
+5,Mocha,Hot Drinks,300,125
+6,Tea,Hot Drinks,170,50
+7,Matcha Latte,Hot Drinks,320,135
+8,Croissant,Bakery,190,80
+9,Cinnamon Roll,Bakery,230,95
+10,Cheesecake,Dessert,320,145
+11,Chocolate Muffin,Dessert,210,85
+12,Sandwich,Food,390,190
+13,Iced Latte,Cold Drinks,310,120
+14,Hot Chocolate,Hot Drinks,260,105
+15,Blueberry Muffin,Dessert,240,100
