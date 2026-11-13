@@ -1,57 +1,48 @@
 import pandas as pd
-import plotly.express as px
-from dash import Dash, html, dcc
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Загрузка данных
-df = pd.read_csv('data.csv')
+df_users = pd.read_csv("users.csv")
+df_orders = pd.read_csv("orders.csv")
+df_events = pd.read_csv("events.csv")
 
-# Создание графика
-fig = px.bar(
-    df,
-    x='month',
-    y='revenue',
-    color='year',
-    barmode='group',
-    title='Сравнение доходов барбершопа за 2024 и 2025 годы',
-    text_auto=True
-)
+df_users['reg_date'] = pd.to_datetime(df_users['reg_date'])
+df_orders['order_date'] = pd.to_datetime(df_orders['order_date'])
+df_events['timestamp'] = pd.to_datetime(df_events['timestamp'])
 
-# Создание линейного графика
-fig_line = px.line(
-    df,
-    x='month',
-    y='revenue',
-    color='year',
-    title='Изменение доходов барбершопа за 2024 и 2025 годы',
-    markers=True
-)
+df_orders_clean = df_orders[df_orders['status'] == 'Delivered'].copy()
 
-# Расчет общего дохода за каждый год
-df_2024 = df[df['year'] == '2024 год']
-df_2025 = df[df['year'] == '2025 год']
+total_revenue = df_orders['amount'].sum()
+clean_revenue = df_orders_clean['amount'].sum()
+lost_revenue = total_revenue - clean_revenue
 
-total_2024 = df_2024['revenue'].sum()
-total_2025 = df_2025['revenue'].sum()
+print(f"Общая сумма заказов (включая отмены): {total_revenue:,.2f} руб.")
+print(f"Реальная очищенная выручка компании: {clean_revenue:,.2f} руб.")
+print(f"Отсеяно из-за отмен и возвратов: {lost_revenue:,.2f} руб.")
 
-# Расчет роста доходов
-growth = round((total_2025 - total_2024) / total_2024 * 100, 2)
+sns.set_theme(style="white")
+fig, axes = plt.subplots(1, 3, figsize=(14, 3.5), dpi=100)
+fig.patch.set_facecolor('#f8f9fa')
 
-# Создание приложения
-app = Dash()
+kpis = [
+    {"title": "ОБЩИЙ ОБЪЕМ ЗАКАЗОВ\n(Грязные данные)", "value": f"{total_revenue:,.0f} ₽", "color": "#1565c0", "bg": "#e3f2fd"},
+    {"title": "РЕАЛЬНАЯ ВЫРУЧКА\n(Чистые деньги)", "value": f"{clean_revenue:,.0f} ₽", "color": "#2e7d32", "bg": "#e8f5e9"},
+    {"title": "ОТСЕЯНО ПРИ ОЧИСТКЕ\n(Отмены и возвраты)", "value": f"{lost_revenue:,.0f} ₽", "color": "#c62828", "bg": "#ffebee"},
+]
 
-app.layout = html.Div([
-    html.H1('Анализ доходов барбершопа за 2024–2025 годы'),
+for i, kpi in enumerate(kpis):
+    ax = axes[i]
+    ax.set_facecolor(kpi["bg"])
 
-    html.H2(f'Общий доход за 2024 год: {total_2024:,} руб.'),
-    html.H2(f'Общий доход за 2025 год: {total_2025:,} руб.'),
-    html.H2(f'Рост доходов: {growth} %'),
+    for spine in ax.spines.values():
+        spine.set_color(kpi["color"])
+        spine.set_linewidth(1.5)
 
+    ax.text(0.5, 0.75, kpi["title"], ha="center", va="center", fontsize=11, fontweight="bold", color="#37474f")
+    ax.text(0.5, 0.35, kpi["value"], ha="center", va="center", fontsize=24, fontweight="bold", color=kpi["color"])
 
-    dcc.Graph(figure=fig),
-    dcc.Graph(figure=fig_line)
-])
+    ax.set_xticks([])
+    ax.set_yticks([])
 
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+plt.tight_layout()
+plt.show()
