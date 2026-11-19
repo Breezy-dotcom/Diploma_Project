@@ -31,12 +31,11 @@ fig = px.bar(
 fig.update_yaxes(categoryorder='total ascending')
 
 
-# оформление графика
+
 fig.update_traces(
     textposition='outside',
 
 )
-
 
 
 fig.show()
