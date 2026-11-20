@@ -38,7 +38,7 @@ fig = px.line(
 )
 
 
-# оформление графика
+
 fig.update_layout(
    xaxis_title='Месяц',
    yaxis_title='Выручка (руб.)'
